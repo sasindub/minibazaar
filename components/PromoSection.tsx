@@ -7,12 +7,19 @@ export default function PromoSection() {
     <section className="py-20 px-4" style={{ background: '#FAFBFA' }}>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Main promo banner */}
-        <div className="relative overflow-hidden rounded-3xl reveal" style={{ background: 'linear-gradient(135deg, #1B8B3B 0%, #156B2E 100%)', minHeight: '280px' }}>
-          {/* Decorative circles */}
-          <div className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-10" style={{ background: 'white', transform: 'translate(30%, -30%)' }} />
-          <div className="absolute bottom-0 left-1/3 w-60 h-60 rounded-full opacity-10" style={{ background: 'white', transform: 'translateY(40%)' }} />
+        <div className="relative overflow-hidden rounded-3xl reveal" style={{ minHeight: '280px' }}>
+          {/* Background image — contain so full image is visible */}
+          <Image
+            src="/images/banner11.png"
+            alt=""
+            fill
+            style={{ objectFit: 'contain', objectPosition: 'right center' }}
+            className="absolute inset-0 z-0"
+          />
+          {/* Green overlay fading left to transparent right */}
+          <div className="absolute inset-0 z-[1]" style={{ background: 'linear-gradient(to right, rgba(27,139,59,0.95) 0%, rgba(27,139,59,0.8) 35%, rgba(27,139,59,0.15) 65%, transparent 100%)' }} />
 
-          <div className="relative z-10 flex flex-col lg:flex-row items-center gap-8 p-10 md:p-14">
+          <div className="relative flex flex-col lg:flex-row items-center gap-8 p-10 md:p-14" style={{ zIndex: 2 }}>
             <div className="flex-1 text-white">
               <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-4 bg-white/20 backdrop-blur-sm">
                 🎁 Special Offer
@@ -31,15 +38,6 @@ export default function PromoSection() {
               >
                 Shop Now <ArrowRight size={16} />
               </Link>
-            </div>
-            <div className="relative w-64 h-48 lg:w-72 lg:h-56 shrink-0">
-              <Image
-                src="https://images.unsplash.com/photo-1561677978-583a6c4fef23?w=600&q=80"
-                alt="Free delivery"
-                fill
-                style={{ objectFit: 'contain' }}
-                className="drop-shadow-2xl"
-              />
             </div>
           </div>
         </div>

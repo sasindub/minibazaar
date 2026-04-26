@@ -17,8 +17,17 @@ export default function TestimonialsSection() {
   const next = () => setCurrent((c) => (c + 1) % testimonials.length)
 
   return (
-    <section className="py-20 px-4 bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto">
+    <section
+      className="relative py-20 px-4 overflow-hidden"
+      style={{
+        backgroundImage: 'url("/images/review.png")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'top center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+
+      <div className="relative max-w-7xl mx-auto" style={{ zIndex: 1 }}>
         <div className="text-center mb-14 reveal">
           <p className="text-sm font-bold uppercase tracking-widest mb-3" style={{ color: '#1B8B3B' }}>Customer Love</p>
           <h2 className="text-3xl md:text-4xl font-black text-gray-900">

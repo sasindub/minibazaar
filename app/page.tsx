@@ -5,6 +5,7 @@ import FeaturedProducts from '@/components/FeaturedProducts'
 import PromoSection from '@/components/PromoSection'
 import TrendingSection from '@/components/TrendingSection'
 import LuxuryBanner from '@/components/LuxuryBanner'
+import FlashDeals from '@/components/FlashDeals'
 import CategoryShowcase from '@/components/CategoryShowcase'
 import TestimonialsSection from '@/components/TestimonialsSection'
 import NewsletterSection from '@/components/NewsletterSection'
@@ -22,6 +23,7 @@ export default async function HomePage() {
     <>
       <HeroSection />
       <StatsSection />
+      <FlashDeals />
       <CategorySection categories={categories} />
       <FeaturedProducts products={featuredProducts} />
       <PromoSection />
