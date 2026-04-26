@@ -60,7 +60,7 @@ export default function FlashDeals() {
       }}
     >
       {/* Dark overlay for contrast */}
-      <div className="absolute inset-0 bg-black/80" />
+      <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.80)' }} />
 
       <div className="relative max-w-7xl mx-auto" style={{ zIndex: 1 }}>
         {/* Header */}
