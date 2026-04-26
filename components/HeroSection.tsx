@@ -1,8 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { ArrowRight, ShoppingBag } from 'lucide-react'
 
 const heroImages = [
   '/images/hero.jpg',
@@ -76,33 +74,6 @@ export default function HeroSection() {
         style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.18) 100%)' }}
       />
 
-      {/* Buttons pinned to bottom via flex — no transform animations */}
-      <div
-        className="absolute inset-0 z-30 flex flex-col justify-end"
-        style={{ paddingBottom: '64px', paddingLeft: '24px' }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex flex-wrap items-center gap-3">
-          <Link
-            href="/shop"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm transition-all hover:scale-105 active:scale-95 shadow-xl"
-            style={{
-              background: 'linear-gradient(135deg, #1B8B3B, #156B2E)',
-              boxShadow: '0 8px 24px rgba(27,139,59,0.4)',
-            }}
-          >
-            <ShoppingBag size={15} />
-            Shop Now
-            <ArrowRight size={14} />
-          </Link>
-          <Link
-            href="/shop"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all border border-white/60 text-gray-800 hover:bg-white bg-white/70 backdrop-blur-md shadow-lg hover:scale-105"
-          >
-            Browse All
-          </Link>
-        </div>
-      </div>
     </section>
   )
 }
