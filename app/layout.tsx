@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import CartDrawer from '@/components/CartDrawer'
 import ScrollObserver from '@/components/ScrollObserver'
+import NavbarSpacer from '@/components/NavbarSpacer'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ScrollObserver />
         <Navbar />
+        <NavbarSpacer />
         <main className="min-h-screen">
           {children}
         </main>

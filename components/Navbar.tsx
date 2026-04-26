@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { useCartStore } from '@/store/cartStore'
 import { Search, ShoppingCart, Menu, X, ChevronDown, Phone, Mail } from 'lucide-react'
 
@@ -23,6 +24,9 @@ const navLinks = [
 ]
 
 export default function Navbar() {
+  const pathname = usePathname()
+  const isHome = pathname === '/'
+
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -33,15 +37,34 @@ export default function Navbar() {
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 20)
+    onScroll()
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  const transparent = isHome && !isScrolled
+
+  // ── styling presets ─────────────────────────
+  const linkPill = transparent
+    ? 'text-white hover:bg-white/25 bg-white/10 backdrop-blur-md border border-white/15'
+    : 'text-gray-700 hover:text-green-700 hover:bg-green-50 border border-transparent'
+
+  const iconBtn = transparent
+    ? 'text-white hover:bg-white/25 bg-white/10 backdrop-blur-md'
+    : 'text-gray-600 hover:bg-gray-100 bg-transparent'
+
+  const cartBadgeBg = '#C8102E'
+
   return (
-    <>
-      {/* Top bar */}
-      <div style={{ background: '#1B8B3B' }} className="text-white text-xs py-2 hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
+    <div className="fixed top-0 left-0 right-0 z-50">
+      {/* Top contact bar — collapses on transparent */}
+      <div
+        className={`text-white text-xs hidden md:block overflow-hidden transition-all duration-500 ${
+          transparent ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'
+        }`}
+        style={{ background: '#1B8B3B' }}
+      >
+        <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
           <div className="flex items-center gap-6">
             <a href="tel:+94XXXXXXXXX" className="flex items-center gap-1.5 hover:text-green-200 transition-colors">
               <Phone size={12} /><span>+94 77 XXX XXXX</span>
@@ -56,41 +79,58 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Main navbar */}
+      {/* Main nav */}
       <nav
-        className={`sticky top-0 z-50 transition-all duration-300 ${
-          isScrolled ? 'shadow-xl' : 'shadow-sm'
+        className={`transition-all duration-500 ${
+          transparent
+            ? 'bg-transparent'
+            : 'shadow-sm'
         }`}
-        style={{ background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(12px)' }}
+        style={
+          transparent
+            ? {}
+            : { background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(12px)' }
+        }
       >
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 shrink-0">
-              <div className="relative w-32 h-12 md:w-40 md:h-14">
-                <Image src="/miniBazaarlogo.jpg" alt="MiniBazaar" fill style={{ objectFit: 'contain', objectPosition: 'left' }} priority />
+              <div
+                className={`relative w-32 h-12 md:w-40 md:h-14 rounded-2xl transition-all duration-300 ${
+                  transparent ? 'bg-white/90 backdrop-blur-md px-2 shadow-lg' : ''
+                }`}
+              >
+                <Image
+                  src="/miniBazaarlogo.jpg"
+                  alt="MiniBazaar"
+                  fill
+                  style={{ objectFit: 'contain', objectPosition: 'left' }}
+                  priority
+                />
               </div>
             </Link>
 
             {/* Desktop nav */}
-            <div className="hidden lg:flex items-center gap-1">
+            <div className="hidden lg:flex items-center gap-1.5">
               {navLinks.map((link) => (
                 <div key={link.label} className="relative group">
                   {link.children ? (
                     <button
-                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-500 text-gray-700 hover:text-green-700 hover:bg-green-50 transition-all duration-200"
+                      className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${linkPill}`}
                       onMouseEnter={() => setActiveDropdown(link.label)}
                       onMouseLeave={() => setActiveDropdown(null)}
-                      style={{ fontWeight: 500 }}
                     >
                       {link.label}
-                      <ChevronDown size={14} className={`transition-transform ${activeDropdown === link.label ? 'rotate-180' : ''}`} />
+                      <ChevronDown
+                        size={14}
+                        className={`transition-transform ${activeDropdown === link.label ? 'rotate-180' : ''}`}
+                      />
                     </button>
                   ) : (
                     <Link
                       href={link.href}
-                      className="px-4 py-2 rounded-lg text-sm text-gray-700 hover:text-green-700 hover:bg-green-50 transition-all duration-200 block"
-                      style={{ fontWeight: 500 }}
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 block ${linkPill}`}
                     >
                       {link.label}
                     </Link>
@@ -98,7 +138,11 @@ export default function Navbar() {
 
                   {link.children && (
                     <div
-                      className={`absolute top-full left-0 mt-1 w-52 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-200 ${activeDropdown === link.label ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}
+                      className={`absolute top-full left-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-200 ${
+                        activeDropdown === link.label
+                          ? 'opacity-100 visible translate-y-0'
+                          : 'opacity-0 invisible -translate-y-2'
+                      }`}
                       onMouseEnter={() => setActiveDropdown(link.label)}
                       onMouseLeave={() => setActiveDropdown(null)}
                     >
@@ -119,34 +163,34 @@ export default function Navbar() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-              {/* Search */}
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className="p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+                className={`p-2.5 rounded-xl transition-all duration-300 ${iconBtn}`}
+                aria-label="Search"
               >
                 <Search size={20} />
               </button>
 
-              {/* Cart */}
               <button
                 onClick={toggleCart}
-                className="relative p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+                className={`relative p-2.5 rounded-xl transition-all duration-300 ${iconBtn}`}
+                aria-label="Cart"
               >
                 <ShoppingCart size={20} />
                 {count > 0 && (
                   <span
                     className="absolute -top-1 -right-1 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center"
-                    style={{ background: '#C8102E', fontSize: '10px' }}
+                    style={{ background: cartBadgeBg, fontSize: '10px' }}
                   >
                     {count > 99 ? '99+' : count}
                   </span>
                 )}
               </button>
 
-              {/* Mobile menu */}
               <button
-                className="lg:hidden p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+                className={`lg:hidden p-2.5 rounded-xl transition-all duration-300 ${iconBtn}`}
                 onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label="Menu"
               >
                 {mobileOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
@@ -184,7 +228,9 @@ export default function Navbar() {
               <div key={link.label}>
                 {link.children ? (
                   <>
-                    <div className="px-4 py-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">{link.label}</div>
+                    <div className="px-4 py-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                      {link.label}
+                    </div>
                     {link.children.map((child) => (
                       <Link
                         key={child.label}
@@ -215,6 +261,6 @@ export default function Navbar() {
           </div>
         )}
       </nav>
-    </>
+    </div>
   )
 }

@@ -1,4 +1,5 @@
 import HeroSection from '@/components/HeroSection'
+import StatsSection from '@/components/StatsSection'
 import CategorySection from '@/components/CategorySection'
 import FeaturedProducts from '@/components/FeaturedProducts'
 import PromoSection from '@/components/PromoSection'
@@ -20,6 +21,7 @@ export default async function HomePage() {
   return (
     <>
       <HeroSection />
+      <StatsSection />
       <CategorySection categories={categories} />
       <FeaturedProducts products={featuredProducts} />
       <PromoSection />
