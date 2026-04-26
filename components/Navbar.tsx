@@ -96,11 +96,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 shrink-0">
-              <div
-                className={`relative w-32 h-12 md:w-40 md:h-14 rounded-2xl transition-all duration-300 ${
-                  transparent ? 'bg-white/90 backdrop-blur-md px-2 shadow-lg' : ''
-                }`}
-              >
+              <div className="relative w-32 h-12 md:w-40 md:h-14">
                 <Image
                   src="/miniBazaarlogo.jpg"
                   alt="MiniBazaar"
