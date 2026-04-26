@@ -71,6 +71,16 @@ body {
 }
 .fade-up { animation: fadeUp 0.6s ease-out; }
 
+/* ─── Ken Burns + hero load bar ──────────────────────── */
+@keyframes kenBurns {
+  from { transform: scale(1.08); }
+  to   { transform: scale(1.0);  }
+}
+@keyframes heroLoadBar {
+  from { width: 0%;    }
+  to   { width: 100%;  }
+}
+
 /* ─── Hero section animations ─────────────────────────── */
 @keyframes heroReveal {
   from { opacity: 0; transform: translateY(28px); }
