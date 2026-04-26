@@ -76,10 +76,10 @@ export default function HeroSection() {
         style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.18) 100%)' }}
       />
 
-      {/* Buttons — stop click propagation so they still navigate themselves */}
+      {/* Buttons pinned to bottom via flex — no transform animations */}
       <div
-        className="absolute bottom-12 md:bottom-16 left-4 md:left-8 z-30"
-        style={{ animation: 'fadeUp 0.8s ease-out 0.3s both' }}
+        className="absolute inset-0 z-30 flex flex-col justify-end"
+        style={{ paddingBottom: '64px', paddingLeft: '24px' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-wrap items-center gap-3">
