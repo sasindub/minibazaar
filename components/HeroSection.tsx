@@ -78,7 +78,8 @@ export default function HeroSection() {
 
       {/* Buttons — stop click propagation so they still navigate themselves */}
       <div
-        className="absolute bottom-12 md:bottom-16 left-4 md:left-8 z-30 animate-in fade-in slide-in-from-bottom-8 duration-1000"
+        className="absolute bottom-12 md:bottom-16 left-4 md:left-8 z-30"
+        style={{ animation: 'fadeUp 0.8s ease-out 0.3s both' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-wrap items-center gap-3">

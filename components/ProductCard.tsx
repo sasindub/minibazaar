@@ -53,13 +53,12 @@ export default function ProductCard({ product, variant = 'default' }: Props) {
           >
             <ShoppingCart size={16} style={{ color: '#1B8B3B' }} />
           </button>
-          <Link
-            href={`/product/${product.id}`}
-            className="opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110"
+          <div
+            className="opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 cursor-pointer"
             title="View product"
           >
             <Eye size={16} className="text-gray-700" />
-          </Link>
+          </div>
         </div>
 
         {/* Badges */}
