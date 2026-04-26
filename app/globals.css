@@ -73,8 +73,8 @@ body {
 
 /* ─── Ken Burns + hero load bar ──────────────────────── */
 @keyframes kenBurns {
-  from { transform: scale(1.08); }
-  to   { transform: scale(1.0);  }
+  from { transform: scale(1.0);  }
+  to   { transform: scale(1.07); }
 }
 @keyframes heroLoadBar {
   from { width: 0%;    }

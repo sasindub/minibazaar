@@ -45,21 +45,13 @@ export default function HeroSection() {
           style={{
             opacity: idx === currentImageIndex ? 1 : 0,
             transition: 'opacity 2.2s ease-in-out',
+            backgroundImage: `url("${img}")`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'top center',
+            animation: 'kenBurns 14s ease-in-out infinite alternate',
+            willChange: 'opacity, transform',
           }}
-        >
-          {/* Re-keying this div when it becomes active restarts the animation */}
-          <div
-            key={idx === currentImageIndex ? `kb-on-${currentImageIndex}` : `kb-off-${idx}`}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: `url("${img}")`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'top center',
-              animation: idx === currentImageIndex ? 'kenBurns 6s ease-out forwards' : 'none',
-            }}
-          />
-        </div>
+        />
       ))}
 
       {/* Gradient overlay */}
