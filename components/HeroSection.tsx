@@ -41,9 +41,11 @@ export default function HeroSection() {
       {heroImages.map((img, idx) => (
         <div
           key={img}
-          className={`absolute inset-0 transition-opacity duration-1000 z-0 ${
-            idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
-          }`}
+          className="absolute inset-0 z-0"
+          style={{
+            opacity: idx === currentImageIndex ? 1 : 0,
+            transition: 'opacity 2.2s ease-in-out',
+          }}
         >
           {/* Re-keying this div when it becomes active restarts the animation */}
           <div
