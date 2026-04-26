@@ -38,7 +38,7 @@ function Countdown() {
     <div className="flex items-center gap-1.5">
       {[pad(time.h), pad(time.m), pad(time.s)].map((val, i) => (
         <span key={i} className="flex items-center gap-1">
-          <span className="text-white font-black text-lg tabular-nums bg-black/40 rounded-lg px-2.5 py-1 min-w-[2.4rem] text-center backdrop-blur-sm">
+          <span className="text-black font-black text-lg tabular-nums rounded-lg px-2.5 py-1 min-w-[2.4rem] text-center" style={{ background: '#D4AF37' }}>
             {val}
           </span>
           {i < 2 && <span className="text-white/80 font-black text-lg">:</span>}
@@ -73,14 +73,14 @@ export default function FlashDeals() {
               <Zap size={22} className="fill-white text-white" />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-red-400">Limited Time</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-white">Limited Time</p>
               <h2 className="text-2xl md:text-3xl font-black text-white leading-tight">
                 Flash <span style={{ color: '#C8102E' }}>Deals</span>
               </h2>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-white/60 text-sm font-medium">Ends in</span>
+            <span className="text-white text-sm font-medium">Ends in</span>
             <Countdown />
           </div>
         </div>
