@@ -68,7 +68,7 @@ export default function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 shrink-0">
               <div className="relative w-32 h-12 md:w-40 md:h-14">
-                <Image src="/logo.png" alt="MiniBazaar" fill style={{ objectFit: 'contain', objectPosition: 'left' }} priority />
+                <Image src="/miniBazaarlogo.jpg" alt="MiniBazaar" fill style={{ objectFit: 'contain', objectPosition: 'left' }} priority />
               </div>
             </Link>
 

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'MiniBazaar - Where Variety Meets Value',
   description: 'Shop premium chocolates, branded perfumes, snacks, and beauty products at MiniBazaar. Fast delivery across Sri Lanka.',
   keywords: 'chocolates, perfumes, snacks, beauty, online shopping, Sri Lanka',
-  icons: { icon: '/logo.png' },
+  icons: { icon: '/miniBazaarlogo.jpg' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

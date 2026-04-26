@@ -49,7 +49,7 @@ export default function Footer() {
             {/* Brand */}
             <div className="lg:col-span-1">
               <div className="relative w-40 h-14 mb-4 bg-white rounded-2xl p-2">
-                <Image src="/logo.png" alt="MiniBazaar" fill style={{ objectFit: 'contain', padding: '4px' }} />
+                <Image src="/miniBazaarlogo.jpg" alt="MiniBazaar" fill style={{ objectFit: 'contain', padding: '4px' }} />
               </div>
               <p className="text-gray-400 text-sm leading-relaxed mb-5">
                 Where variety meets value. Your one-stop shop for premium chocolates, branded perfumes, snacks, and more — delivered to your door across Sri Lanka.
