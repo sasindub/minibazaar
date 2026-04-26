@@ -51,16 +51,17 @@ export default function HeroSection() {
           style={{
             backgroundImage: `url("${img}")`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundPosition: 'top center',
           }}
         />
       ))}
 
-      {/* Intro video — overlays carousel until ended */}
+      {/* Intro video — anchored to top so bottom is cropped */}
       <video
         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 z-10 ${
           videoEnded ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
+        style={{ objectPosition: 'top' }}
         src="/images/hervid.mp4"
         autoPlay
         muted
