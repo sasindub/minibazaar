@@ -32,10 +32,12 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
   const { itemCount, toggleCart } = useCartStore()
-  const count = itemCount()
+  const count = mounted ? itemCount() : 0
 
   useEffect(() => {
+    setMounted(true)
     const onScroll = () => setIsScrolled(window.scrollY > 20)
     onScroll()
     window.addEventListener('scroll', onScroll)

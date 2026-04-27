@@ -34,7 +34,7 @@ export default function HeroSection() {
   return (
     <section
       className="relative w-full overflow-hidden cursor-pointer"
-      style={{ height: '100vh', minHeight: '100vh' }}
+      style={{ height: '100vh', minHeight: '100vh', background: '#0d1b0d' }}
       onClick={() => router.push('/shop')}
     >
       {/* ── Carousel with Ken Burns ───────────────────── */}
