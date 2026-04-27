@@ -23,7 +23,7 @@ export default function CategorySection({ categories }: { categories: Category[]
   const cats = categories.length > 0 ? categories : fallbackCategories
 
   return (
-    <section className="py-20 px-4" style={{ background: '#FAFBFA' }}>
+    <section className="py-20 px-4 hidden md:block" style={{ background: '#FAFBFA' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 reveal">

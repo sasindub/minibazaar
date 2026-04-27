@@ -22,8 +22,15 @@ export default async function HomePage() {
   return (
     <>
       <HeroSection />
+      {/* Mobile only: Flash Deals immediately below hero */}
+      <div className="block md:hidden">
+        <FlashDeals />
+      </div>
       <StatsSection />
-      <FlashDeals />
+      {/* Desktop only: Flash Deals in normal position */}
+      <div className="hidden md:block">
+        <FlashDeals />
+      </div>
       <CategorySection categories={categories} />
       <FeaturedProducts products={featuredProducts} />
       <PromoSection />
