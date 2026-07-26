@@ -45,7 +45,7 @@ export interface Order {
   customer_phone: string
   shipping_address: ShippingAddress
   payment_method: 'bank_transfer' | 'cash_on_delivery'
-  payment_status: 'pending' | 'paid' | 'failed'
+  payment_status: 'pending' | 'paid' | 'failed' | 'refunded'
   order_status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
   subtotal: number
   shipping_fee: number

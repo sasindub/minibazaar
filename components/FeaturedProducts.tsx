@@ -4,19 +4,9 @@ import { ArrowRight, Sparkles } from 'lucide-react'
 import ProductCard from './ProductCard'
 import type { Product } from '@/lib/types'
 
-const dummyProducts: Product[] = [
-  { id: '1', name: 'Ferrero Rocher 24 Pieces Gift Box', slug: 'ferrero-rocher-24', description: 'Iconic hazelnut chocolate in golden wrap.', price: 2850, compare_price: 3200, images: ['https://images.unsplash.com/photo-1548907040-4baa42d10919?w=500&q=80'], category_id: null, stock: 50, is_featured: true, is_active: true, tags: ['gift'], created_at: '', updated_at: '' },
-  { id: '2', name: 'Dior Sauvage Eau de Parfum 100ml', slug: 'dior-sauvage', description: 'Radically fresh and noble fragrance.', price: 38500, compare_price: 42000, images: ['https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500&q=80'], category_id: null, stock: 20, is_featured: true, is_active: true, tags: ['luxury'], created_at: '', updated_at: '' },
-  { id: '3', name: 'Cadbury Dairy Milk 200g', slug: 'cadbury-dairy-milk', description: 'Classic creamy milk chocolate.', price: 650, compare_price: 750, images: ['https://images.unsplash.com/photo-1559181567-c3190b10a1d5?w=500&q=80'], category_id: null, stock: 120, is_featured: true, is_active: true, tags: ['classic'], created_at: '', updated_at: '' },
-  { id: '4', name: 'Chanel No. 5 EDP 50ml', slug: 'chanel-no5', description: "The world's most iconic fragrance.", price: 52000, compare_price: 58000, images: ['https://images.unsplash.com/photo-1588776814546-daab30f310ce?w=500&q=80'], category_id: null, stock: 15, is_featured: true, is_active: true, tags: ['luxury'], created_at: '', updated_at: '' },
-  { id: '5', name: 'Mixed Premium Nuts 500g', slug: 'mixed-nuts', description: 'Premium selection of roasted nuts.', price: 2200, compare_price: 2600, images: ['https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=500&q=80'], category_id: null, stock: 75, is_featured: true, is_active: true, tags: ['healthy'], created_at: '', updated_at: '' },
-  { id: '6', name: 'Godiva Gold Collection 16pc', slug: 'godiva-gold', description: 'Premium Belgian chocolate assortment.', price: 5800, compare_price: 6500, images: ['https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=500&q=80'], category_id: null, stock: 30, is_featured: true, is_active: true, tags: ['gift', 'premium'], created_at: '', updated_at: '' },
-  { id: '7', name: 'Viktor & Rolf Flowerbomb EDP', slug: 'flowerbomb', description: 'Explosive feminine floral fragrance.', price: 42000, compare_price: 47500, images: ['https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=500&q=80'], category_id: null, stock: 18, is_featured: true, is_active: true, tags: ['floral'], created_at: '', updated_at: '' },
-  { id: '8', name: 'Lindt Excellence Dark 85%', slug: 'lindt-dark-85', description: 'Intense Swiss dark chocolate.', price: 1100, compare_price: 1300, images: ['https://images.unsplash.com/photo-1611070022-87990e12c919?w=500&q=80'], category_id: null, stock: 80, is_featured: true, is_active: true, tags: ['dark', 'swiss'], created_at: '', updated_at: '' },
-]
-
 export default function FeaturedProducts({ products }: { products: Product[] }) {
-  const displayProducts = products.length > 0 ? products : dummyProducts
+  const displayProducts = products
+  if (displayProducts.length === 0) return null
 
   return (
     <section className="py-20 px-4 bg-white">

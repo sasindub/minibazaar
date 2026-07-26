@@ -6,51 +6,6 @@ import { useCartStore } from '@/store/cartStore'
 import toast from 'react-hot-toast'
 import type { Product } from '@/lib/types'
 
-const trendingProducts: Product[] = [
-  {
-    id: 't1', name: 'Toblerone Variety Pack 6×100g', slug: 'toblerone-variety',
-    description: 'Six iconic triangular bars in milk, white, and dark.',
-    price: 3200, compare_price: 3800,
-    images: ['https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=500&q=80'],
-    category_id: null, stock: 45, is_featured: false, is_active: true, tags: ['swiss'], created_at: '', updated_at: '',
-  },
-  {
-    id: 't2', name: 'Giorgio Armani Acqua di Giò 100ml', slug: 'acqua-di-gio',
-    description: 'Fresh aquatic fragrance inspired by the Mediterranean.',
-    price: 31500, compare_price: 36000,
-    images: ['https://images.unsplash.com/photo-1541643600914-78b084683702?w=500&q=80'],
-    category_id: null, stock: 22, is_featured: false, is_active: true, tags: ['mens'], created_at: '', updated_at: '',
-  },
-  {
-    id: 't3', name: 'Pringles Mega Stack Gift Set', slug: 'pringles-mega-set',
-    description: 'Six fan-favourite flavours in a gorgeous gift tin.',
-    price: 2450, compare_price: 2900,
-    images: ['https://images.unsplash.com/photo-1600952899601-4c6d8e4c5f1e?w=500&q=80'],
-    category_id: null, stock: 60, is_featured: false, is_active: true, tags: ['snacks'], created_at: '', updated_at: '',
-  },
-  {
-    id: 't4', name: 'Neutrogena Hydro Boost Serum', slug: 'neutrogena-hydro-boost',
-    description: 'Hyaluronic acid serum for deep 48-hour hydration.',
-    price: 5800, compare_price: 6800,
-    images: ['https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=500&q=80'],
-    category_id: null, stock: 35, is_featured: false, is_active: true, tags: ['skincare'], created_at: '', updated_at: '',
-  },
-  {
-    id: 't5', name: 'Kinder Bueno White 39g × 12', slug: 'kinder-bueno-white-12',
-    description: 'Crispy wafer with smooth white chocolate & hazelnut cream.',
-    price: 1850, compare_price: 2200,
-    images: ['https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=500&q=80'],
-    category_id: null, stock: 80, is_featured: false, is_active: true, tags: ['kinder'], created_at: '', updated_at: '',
-  },
-  {
-    id: 't6', name: 'Yves Saint Laurent Black Opium EDP', slug: 'ysl-black-opium',
-    description: 'Bold floral coffee scent with vanilla and white florals.',
-    price: 44500, compare_price: 50000,
-    images: ['https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=500&q=80'],
-    category_id: null, stock: 12, is_featured: false, is_active: true, tags: ['womens', 'luxury'], created_at: '', updated_at: '',
-  },
-]
-
 function TrendingCard({ product }: { product: Product }) {
   const addItem = useCartStore((s) => s.addItem)
   const discount = product.compare_price
@@ -66,7 +21,7 @@ function TrendingCard({ product }: { product: Product }) {
     <div className="group bg-white rounded-3xl overflow-hidden border border-gray-100 hover:border-green-200 hover:shadow-xl transition-all duration-300 flex flex-col">
       <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
         <Image
-          src={product.images[0]}
+          src={product.images[0] || `https://picsum.photos/seed/${product.id}/400/300`}
           alt={product.name}
           fill
           style={{ objectFit: 'cover' }}
@@ -112,7 +67,8 @@ function TrendingCard({ product }: { product: Product }) {
 }
 
 export default function TrendingSection({ products }: { products?: Product[] }) {
-  const display = products && products.length > 0 ? products : trendingProducts
+  const display = products ?? []
+  if (display.length === 0) return null
 
   return (
     <section className="py-20 px-4 bg-white">

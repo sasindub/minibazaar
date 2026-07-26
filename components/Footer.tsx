@@ -122,13 +122,13 @@ export default function Footer() {
             <div>
               <h3 className="font-bold text-white mb-5 text-sm uppercase tracking-widest">Contact Us</h3>
               <div className="space-y-4">
-                <a href="tel:+94XXXXXXXXX" className="flex items-start gap-3 group">
+                <a href="tel:+94772525362" className="flex items-start gap-3 group">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: 'rgba(27,139,59,0.2)' }}>
                     <Phone size={14} style={{ color: '#4ade80' }} />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 mb-0.5">Phone</p>
-                    <p className="text-gray-300 text-sm group-hover:text-white transition-colors">+94 77 XXX XXXX</p>
+                    <p className="text-gray-300 text-sm group-hover:text-white transition-colors">+94 77 252 5362</p>
                   </div>
                 </a>
                 <a href="mailto:hello@minibazaar.lk" className="flex items-start gap-3 group">

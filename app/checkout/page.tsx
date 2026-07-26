@@ -260,7 +260,7 @@ export default function CheckoutPage() {
                           <p className="text-gray-700"><span className="font-semibold">Account Name:</span> MiniBazaar (Pvt) Ltd</p>
                           <p className="text-gray-700"><span className="font-semibold">Account No:</span> 123-4567-8901</p>
                           <p className="text-gray-700"><span className="font-semibold">Branch:</span> Colombo</p>
-                          <p className="text-xs text-gray-500 mt-2">After transfer, WhatsApp the receipt to +94 77 XXX XXXX with your order number.</p>
+                          <p className="text-xs text-gray-500 mt-2">After transfer, WhatsApp the receipt to +94 77 252 5362 with your order number.</p>
                         </div>
                       )}
                     </div>

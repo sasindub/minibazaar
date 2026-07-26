@@ -68,8 +68,8 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
           <div className="flex items-center gap-6">
-            <a href="tel:+94XXXXXXXXX" className="flex items-center gap-1.5 hover:text-green-200 transition-colors">
-              <Phone size={12} /><span>+94 77 XXX XXXX</span>
+            <a href="tel:+94772525362" className="flex items-center gap-1.5 hover:text-green-200 transition-colors">
+              <Phone size={12} /><span>+94 77 252 5362</span>
             </a>
             <a href="mailto:hello@minibazaar.lk" className="flex items-center gap-1.5 hover:text-green-200 transition-colors">
               <Mail size={12} /><span>hello@minibazaar.lk</span>
@@ -252,8 +252,8 @@ export default function Navbar() {
               </div>
             ))}
             <div className="p-4 border-t border-gray-100">
-              <a href="tel:+94XXXXXXXXX" className="flex items-center gap-2 text-sm text-gray-600">
-                <Phone size={14} /> +94 77 XXX XXXX
+              <a href="tel:+94772525362" className="flex items-center gap-2 text-sm text-gray-600">
+                <Phone size={14} /> +94 77 252 5362
               </a>
             </div>
           </div>

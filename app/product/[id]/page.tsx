@@ -1,55 +1,59 @@
 'use client'
-import { useState, use } from 'react'
+import { useState, useEffect, use } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw, Plus, Minus, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, Plus, Minus, ChevronRight, CheckCircle2 } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 import toast from 'react-hot-toast'
 import type { Product } from '@/lib/types'
-
-// Dummy product for demo
-const getDummyProduct = (id: string): Product => ({
-  id,
-  name: 'Ferrero Rocher 24 Pieces Gift Box',
-  slug: 'ferrero-rocher-24',
-  description: `The iconic Ferrero Rocher gift box featuring 24 individually wrapped hazelnut chocolates in their signature golden foil.
-
-Each Ferrero Rocher begins with a whole roasted hazelnut at its heart, surrounded by smooth chocolate cream, encased in a crispy wafer shell, and then enrobed in milk chocolate studded with finely chopped hazelnuts.
-
-Perfect for gifting on birthdays, anniversaries, holidays, or any special occasion. The elegant gold box makes it a premium gift that's sure to impress.`,
-  price: 2850,
-  compare_price: 3200,
-  images: [
-    'https://images.unsplash.com/photo-1548907040-4baa42d10919?w=800&q=80',
-    'https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=800&q=80',
-    'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=800&q=80',
-  ],
-  category_id: null,
-  stock: 50,
-  is_featured: true,
-  is_active: true,
-  tags: ['gift', 'premium', 'hazelnut'],
-  created_at: '',
-  updated_at: '',
-})
-
-const relatedProducts: Product[] = [
-  { id: '6', name: 'Godiva Gold Collection 16pc', slug: 'godiva-gold', description: 'Premium Belgian chocolate assortment.', price: 5800, compare_price: 6500, images: ['https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=400&q=80'], category_id: null, stock: 30, is_featured: true, is_active: true, tags: [], created_at: '', updated_at: '' },
-  { id: '8', name: 'Lindt Excellence Dark 85%', slug: 'lindt-dark-85', description: 'Intense Swiss dark chocolate.', price: 1100, compare_price: 1300, images: ['https://images.unsplash.com/photo-1611070022-87990e12c919?w=400&q=80'], category_id: null, stock: 80, is_featured: true, is_active: true, tags: [], created_at: '', updated_at: '' },
-  { id: '3', name: 'Cadbury Dairy Milk 200g', slug: 'cadbury-dairy-milk', description: 'Classic creamy milk chocolate.', price: 650, compare_price: 750, images: ['https://images.unsplash.com/photo-1559181567-c3190b10a1d5?w=400&q=80'], category_id: null, stock: 120, is_featured: true, is_active: true, tags: [], created_at: '', updated_at: '' },
-  { id: '10', name: 'Raffaello Coconut Almond 230g', slug: 'raffaello', description: 'Delicate white chocolate coconut balls.', price: 1950, compare_price: 2200, images: ['https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=400&q=80'], category_id: null, stock: 60, is_featured: false, is_active: true, tags: [], created_at: '', updated_at: '' },
-]
-
+import { getProduct, getProducts } from '@/lib/products'
 import ProductCard from '@/components/ProductCard'
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
-  const [product] = useState<Product>(getDummyProduct(id))
+  const [product, setProduct] = useState<Product | null>(null)
+  const [related, setRelated] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
-  const [activeTab, setActiveTab] = useState<'description' | 'details' | 'reviews'>('description')
+  const [activeTab, setActiveTab] = useState<'description' | 'details'>('description')
   const { addItem, openCart } = useCartStore()
+
+  useEffect(() => {
+    let active = true
+    ;(async () => {
+      setLoading(true)
+      const p = await getProduct(id)
+      if (!active) return
+      setProduct(p)
+      if (p) {
+        const rel = await getProducts({ limit: 5 }).catch(() => [])
+        if (active) setRelated((rel as Product[]).filter((r) => r.id !== p.id).slice(0, 4))
+      }
+      setLoading(false)
+    })()
+    return () => { active = false }
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="w-10 h-10 border-4 border-green-200 border-t-green-600 rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4 text-center">
+        <p className="text-6xl mb-4">🔍</p>
+        <h1 className="text-2xl font-black text-gray-900 mb-2">Product not found</h1>
+        <p className="text-gray-500 mb-6">This product may have been removed or is unavailable.</p>
+        <Link href="/shop" className="px-6 py-3 rounded-xl text-white font-semibold" style={{ background: '#1B8B3B' }}>Back to Shop</Link>
+      </div>
+    )
+  }
 
   const discount = product.compare_price
     ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
@@ -64,6 +68,13 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     addItem(product, quantity)
     openCart()
   }
+
+  const details: [string, string][] = [
+    ['Category', product.category?.name || '—'],
+    ['Availability', product.stock > 0 ? 'In stock' : 'Out of stock'],
+    ['Stock', String(product.stock)],
+    ...(product.tags?.length ? [['Tags', product.tags.join(', ')] as [string, string]] : []),
+  ]
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -83,13 +94,17 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           {/* Images */}
           <div className="space-y-4">
             <div className="relative aspect-square rounded-3xl overflow-hidden bg-white shadow-lg">
-              <Image
-                src={product.images[selectedImage] || 'https://picsum.photos/800/800'}
-                alt={product.name}
-                fill
-                style={{ objectFit: 'cover' }}
-                priority
-              />
+              {product.images[selectedImage] ? (
+                <Image
+                  src={product.images[selectedImage]}
+                  alt={product.name}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">🛍️</div>
+              )}
               {discount > 0 && (
                 <span className="absolute top-4 left-4 px-3 py-1.5 rounded-xl text-white text-sm font-bold" style={{ background: '#C8102E' }}>
                   -{discount}% OFF
@@ -129,14 +144,6 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             </div>
 
             <h1 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight mb-4">{product.name}</h1>
-
-            {/* Rating */}
-            <div className="flex items-center gap-3 mb-5">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => <Star key={i} size={16} className={i < 4 ? 'fill-amber-400 text-amber-400' : 'fill-gray-200 text-gray-200'} />)}
-              </div>
-              <span className="text-sm text-gray-500 font-medium">4.8 (124 reviews)</span>
-            </div>
 
             {/* Price */}
             <div className="flex items-end gap-3 mb-6 p-4 rounded-2xl" style={{ background: '#E8F5ED' }}>
@@ -222,7 +229,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         {/* Tabs */}
         <div className="bg-white rounded-3xl p-6 shadow-sm mb-12">
           <div className="flex border-b border-gray-100 mb-6 gap-6">
-            {(['description', 'details', 'reviews'] as const).map((tab) => (
+            {(['description', 'details'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -235,22 +242,17 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
           {activeTab === 'description' && (
             <div className="prose max-w-none">
-              {product.description?.split('\n\n').map((para, i) => (
-                <p key={i} className="text-gray-600 leading-relaxed mb-4 text-sm">{para}</p>
-              ))}
+              {product.description
+                ? product.description.split('\n\n').map((para, i) => (
+                    <p key={i} className="text-gray-600 leading-relaxed mb-4 text-sm">{para}</p>
+                  ))
+                : <p className="text-gray-400 text-sm">No description provided.</p>}
             </div>
           )}
 
           {activeTab === 'details' && (
             <div className="grid grid-cols-2 gap-3">
-              {[
-                ['Brand', 'Ferrero'],
-                ['Weight', '300g'],
-                ['Pieces', '24'],
-                ['Country', 'Italy'],
-                ['Shelf Life', '12 months'],
-                ['Allergens', 'Contains nuts, milk, gluten'],
-              ].map(([k, v]) => (
+              {details.map(([k, v]) => (
                 <div key={k} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
                   <CheckCircle2 size={14} style={{ color: '#1B8B3B' }} />
                   <span className="text-sm text-gray-500 font-medium">{k}:</span>
@@ -259,38 +261,17 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               ))}
             </div>
           )}
-
-          {activeTab === 'reviews' && (
-            <div className="space-y-4">
-              {[
-                { name: 'Dilini P.', rating: 5, date: '2 weeks ago', text: 'Absolutely loved it! Perfect gift for my husband. Arrived well packaged and fresh.' },
-                { name: 'Kasun F.', rating: 5, date: '1 month ago', text: 'Great quality, exactly as described. Will definitely order again!' },
-                { name: 'Nimesha J.', rating: 4, date: '1 month ago', text: 'Very happy with the product. Fast delivery too!' },
-              ].map((r, i) => (
-                <div key={i} className="p-4 rounded-2xl bg-gray-50">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <p className="font-bold text-sm text-gray-900">{r.name}</p>
-                      <div className="flex mt-0.5">
-                        {[...Array(5)].map((_, j) => <Star key={j} size={12} className={j < r.rating ? 'fill-amber-400 text-amber-400' : 'fill-gray-200 text-gray-200'} />)}
-                      </div>
-                    </div>
-                    <span className="text-xs text-gray-400">{r.date}</span>
-                  </div>
-                  <p className="text-sm text-gray-600">{r.text}</p>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Related products */}
-        <div>
-          <h2 className="text-2xl font-black text-gray-900 mb-6">You May Also Like</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {relatedProducts.map((p) => <ProductCard key={p.id} product={p} />)}
+        {related.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-black text-gray-900 mb-6">You May Also Like</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {related.map((p) => <ProductCard key={p.id} product={p} />)}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

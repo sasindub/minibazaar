@@ -6,21 +6,6 @@ import { Search, SlidersHorizontal, ChevronDown, X } from 'lucide-react'
 import type { Product, Category } from '@/lib/types'
 import { supabase } from '@/lib/supabase'
 
-const dummyProducts: Product[] = [
-  { id: '1', name: 'Ferrero Rocher 24 Pieces Gift Box', slug: 'ferrero-rocher-24', description: 'Iconic hazelnut chocolate in golden wrap.', price: 2850, compare_price: 3200, images: ['https://images.unsplash.com/photo-1548907040-4baa42d10919?w=500&q=80'], category_id: null, stock: 50, is_featured: true, is_active: true, tags: ['gift'], created_at: '', updated_at: '' },
-  { id: '2', name: 'Dior Sauvage Eau de Parfum 100ml', slug: 'dior-sauvage', description: 'Radically fresh and noble fragrance.', price: 38500, compare_price: 42000, images: ['https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500&q=80'], category_id: null, stock: 20, is_featured: true, is_active: true, tags: ['luxury'], created_at: '', updated_at: '' },
-  { id: '3', name: 'Cadbury Dairy Milk 200g', slug: 'cadbury-dairy-milk', description: 'Classic creamy milk chocolate.', price: 650, compare_price: 750, images: ['https://images.unsplash.com/photo-1559181567-c3190b10a1d5?w=500&q=80'], category_id: null, stock: 120, is_featured: true, is_active: true, tags: ['classic'], created_at: '', updated_at: '' },
-  { id: '4', name: 'Chanel No. 5 EDP 50ml', slug: 'chanel-no5', description: "The world's most iconic fragrance.", price: 52000, compare_price: 58000, images: ['https://images.unsplash.com/photo-1588776814546-daab30f310ce?w=500&q=80'], category_id: null, stock: 15, is_featured: true, is_active: true, tags: ['luxury'], created_at: '', updated_at: '' },
-  { id: '5', name: 'Mixed Premium Nuts 500g', slug: 'mixed-nuts', description: 'Premium selection of roasted nuts.', price: 2200, compare_price: 2600, images: ['https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=500&q=80'], category_id: null, stock: 75, is_featured: true, is_active: true, tags: ['healthy'], created_at: '', updated_at: '' },
-  { id: '6', name: 'Godiva Gold Collection 16pc', slug: 'godiva-gold', description: 'Premium Belgian chocolate assortment.', price: 5800, compare_price: 6500, images: ['https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=500&q=80'], category_id: null, stock: 30, is_featured: true, is_active: true, tags: ['gift', 'premium'], created_at: '', updated_at: '' },
-  { id: '7', name: 'Viktor & Rolf Flowerbomb EDP 50ml', slug: 'flowerbomb', description: 'Explosive feminine floral fragrance.', price: 42000, compare_price: 47500, images: ['https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=500&q=80'], category_id: null, stock: 18, is_featured: true, is_active: true, tags: ['floral'], created_at: '', updated_at: '' },
-  { id: '8', name: 'Lindt Excellence Dark 85%', slug: 'lindt-dark-85', description: 'Intense Swiss dark chocolate.', price: 1100, compare_price: 1300, images: ['https://images.unsplash.com/photo-1611070022-87990e12c919?w=500&q=80'], category_id: null, stock: 80, is_featured: true, is_active: true, tags: ['dark', 'swiss'], created_at: '', updated_at: '' },
-  { id: '9', name: 'Versace Eros EDT 100ml', slug: 'versace-eros', description: 'Powerful and seductive fragrance for men.', price: 28500, compare_price: 32000, images: ['https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=500&q=80'], category_id: null, stock: 25, is_featured: false, is_active: true, tags: ['mens'], created_at: '', updated_at: '' },
-  { id: '10', name: 'Raffaello Coconut Almond 230g', slug: 'raffaello', description: 'Delicate white chocolate coconut balls.', price: 1950, compare_price: 2200, images: ['https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=500&q=80'], category_id: null, stock: 60, is_featured: false, is_active: true, tags: ['coconut'], created_at: '', updated_at: '' },
-  { id: '11', name: 'Belgian Waffle Cookies Gift Box', slug: 'belgian-waffle-cookies', description: 'Authentic Belgian butter waffle cookies.', price: 1650, compare_price: 1950, images: ['https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500&q=80'], category_id: null, stock: 90, is_featured: false, is_active: true, tags: ['cookies'], created_at: '', updated_at: '' },
-  { id: '12', name: 'L\'Oréal Revitalift Moisturizer', slug: 'loreal-revitalift', description: 'Anti-wrinkle + firming day moisturizer.', price: 4200, compare_price: 5000, images: ['https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=500&q=80'], category_id: null, stock: 45, is_featured: false, is_active: true, tags: ['skincare'], created_at: '', updated_at: '' },
-]
-
 const sortOptions = [
   { value: 'latest', label: 'Latest' },
   { value: 'price-asc', label: 'Price: Low to High' },
@@ -30,9 +15,9 @@ const sortOptions = [
 
 function ShopContent() {
   const searchParams = useSearchParams()
-  const [products, setProducts] = useState<Product[]>(dummyProducts)
+  const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '')
   const [sort, setSort] = useState('latest')
@@ -47,7 +32,7 @@ function ShopContent() {
     setLoading(true)
     try {
       const { data: cats } = await supabase.from('categories').select('*')
-      if (cats && cats.length > 0) setCategories(cats as Category[])
+      setCategories((cats as Category[]) || [])
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let query: any = supabase.from('products').select('*, category:categories(*)').eq('is_active', true)
@@ -60,8 +45,8 @@ function ShopContent() {
       else query = query.order('created_at', { ascending: false })
 
       const { data } = await query
-      if (data && data.length > 0) setProducts(data as Product[])
-    } catch {}
+      setProducts((data as Product[]) || [])
+    } catch { setProducts([]) }
     setLoading(false)
   }
 
@@ -108,12 +93,7 @@ function ShopContent() {
             >
               All
             </button>
-            {(categories.length > 0 ? categories : [
-              { id: 'c1', slug: 'chocolates', name: 'Chocolates', description: null, image_url: null, created_at: '' },
-              { id: 'c2', slug: 'perfumes', name: 'Perfumes', description: null, image_url: null, created_at: '' },
-              { id: 'c3', slug: 'snacks', name: 'Snacks', description: null, image_url: null, created_at: '' },
-              { id: 'c4', slug: 'beauty', name: 'Beauty', description: null, image_url: null, created_at: '' },
-            ]).map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.slug)}

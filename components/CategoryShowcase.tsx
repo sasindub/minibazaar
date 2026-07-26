@@ -2,134 +2,53 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, ShoppingCart, Star, Sparkles } from 'lucide-react'
+import { ArrowRight, ShoppingCart, Sparkles } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 import toast from 'react-hot-toast'
-import type { Product } from '@/lib/types'
+import type { Product, Category } from '@/lib/types'
 
-type ShowcaseProduct = {
-  id: string
-  name: string
-  price: number
-  compare_price: number
-  image: string
-  rating: number
-}
-
-type ShowcaseCategory = {
-  slug: string
-  label: string
+// Per-category visual styling (design metadata only). Products come from the DB.
+// Unknown slugs fall back to the default style.
+type CategoryStyle = {
   emoji: string
   color: string
-  lightBg: string
   accentColor: string
-  ctaText: string
   headline: string
   sub: string
   badge: string
-  image: string
-  products: ShowcaseProduct[]
 }
 
-const showcaseData: ShowcaseCategory[] = [
-  {
-    slug: 'chocolates',
-    label: 'Chocolates',
-    emoji: '🍫',
-    color: '#3E1C00',
-    lightBg: '#FFF8F2',
-    accentColor: '#C8102E',
-    ctaText: '#FFC857',
-    headline: 'Sweet Indulgence',
-    sub: 'Premium chocolates from world-renowned brands — Ferrero, Lindt, Godiva and more.',
-    badge: 'Trending',
-    image: 'https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=900&q=80',
-    products: [
-      { id: 'sc1', name: 'Ferrero Rocher 24pc Gift Box',     price: 2850,  compare_price: 3200,  image: 'https://images.unsplash.com/photo-1548907040-4baa42d10919?w=500&q=80', rating: 5 },
-      { id: 'sc2', name: 'Lindt Excellence Dark 85%',        price: 1100,  compare_price: 1300,  image: 'https://images.unsplash.com/photo-1611070022-87990e12c919?w=500&q=80', rating: 5 },
-      { id: 'sc3', name: 'Godiva Gold Collection 16pc',      price: 5800,  compare_price: 6500,  image: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=500&q=80', rating: 4 },
-      { id: 'sc4', name: 'Toblerone Variety Pack 6×100g',    price: 3200,  compare_price: 3800,  image: 'https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=500&q=80', rating: 5 },
-    ],
-  },
-  {
-    slug: 'perfumes',
-    label: 'Perfumes',
-    emoji: '🌸',
-    color: '#0D1B2A',
-    lightBg: '#F5F7FF',
-    accentColor: '#1B8B3B',
-    ctaText: '#D4AF37',
-    headline: 'Luxury Fragrances',
-    sub: 'Authentic branded perfumes from Dior, Chanel, Versace and YSL — at unbeatable prices.',
-    badge: 'Authentic',
-    image: 'https://images.unsplash.com/photo-1541643600914-78b084683702?w=900&q=80',
-    products: [
-      { id: 'sp1', name: 'Dior Sauvage EDP 100ml',                price: 38500, compare_price: 42000, image: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500&q=80', rating: 5 },
-      { id: 'sp2', name: 'Chanel No. 5 EDP 50ml',                 price: 52000, compare_price: 58000, image: 'https://images.unsplash.com/photo-1588776814546-daab30f310ce?w=500&q=80', rating: 5 },
-      { id: 'sp3', name: 'Versace Eros EDT 100ml',                price: 28500, compare_price: 32000, image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=500&q=80', rating: 4 },
-      { id: 'sp4', name: 'YSL Black Opium EDP 50ml',              price: 44500, compare_price: 50000, image: 'https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=500&q=80', rating: 5 },
-    ],
-  },
-  {
-    slug: 'snacks',
-    label: 'Snacks & Nuts',
-    emoji: '🥜',
-    color: '#1B4D1A',
-    lightBg: '#F5FFF5',
-    accentColor: '#1B8B3B',
-    ctaText: '#86EFAC',
-    headline: 'Premium Snacks',
-    sub: 'Exotic nuts, gourmet cookies and crackers — perfect for any occasion.',
-    badge: 'Best Value',
-    image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=900&q=80',
-    products: [
-      { id: 'ss1', name: 'Mixed Premium Nuts 500g',         price: 2200, compare_price: 2600, image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=500&q=80', rating: 5 },
-      { id: 'ss2', name: 'Belgian Waffle Cookies Gift Box', price: 1650, compare_price: 1950, image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500&q=80', rating: 4 },
-      { id: 'ss3', name: 'Raffaello Coconut Almond 230g',   price: 1950, compare_price: 2200, image: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=500&q=80', rating: 5 },
-      { id: 'ss4', name: 'Pringles Mega Stack 6 flavours',  price: 2450, compare_price: 2900, image: 'https://images.unsplash.com/photo-1600952899601-4c6d8e4c5f1e?w=500&q=80', rating: 4 },
-    ],
-  },
-  {
-    slug: 'beauty',
-    label: 'Beauty',
-    emoji: '💄',
-    color: '#4A0E3A',
-    lightBg: '#FFF5FB',
-    accentColor: '#C8102E',
-    ctaText: '#F9A8D4',
-    headline: 'Glow Up',
-    sub: 'Skincare and beauty essentials from L\'Oréal, Neutrogena and more — for radiant skin every day.',
-    badge: 'New In',
-    image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=900&q=80',
-    products: [
-      { id: 'sb1', name: 'L\'Oréal Revitalift Day Moisturizer',  price: 4200, compare_price: 5000, image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=500&q=80', rating: 5 },
-      { id: 'sb2', name: 'Neutrogena Hydro Boost Serum',         price: 5800, compare_price: 6800, image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&q=80', rating: 5 },
-      { id: 'sb3', name: 'The Ordinary Niacinamide 10%',         price: 2400, compare_price: 2800, image: 'https://images.unsplash.com/photo-1612817288484-6f916006741a?w=500&q=80', rating: 5 },
-      { id: 'sb4', name: 'CeraVe Hydrating Cleanser 236ml',      price: 3100, compare_price: 3600, image: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?w=500&q=80', rating: 4 },
-    ],
-  },
-]
+const defaultStyle: CategoryStyle = {
+  emoji: '🛍️', color: '#1B4D1A', accentColor: '#1B8B3B',
+  headline: 'Featured Picks', sub: 'Explore our handpicked selection in this category.', badge: 'Popular',
+}
 
-function ShowcaseCard({ product, accentColor }: { product: ShowcaseProduct; accentColor: string }) {
+const styleMap: Record<string, CategoryStyle> = {
+  chocolates: { emoji: '🍫', color: '#3E1C00', accentColor: '#C8102E', headline: 'Sweet Indulgence', sub: 'Premium chocolates from world-renowned brands.', badge: 'Trending' },
+  perfumes: { emoji: '🌸', color: '#0D1B2A', accentColor: '#1B8B3B', headline: 'Luxury Fragrances', sub: 'Authentic branded perfumes at unbeatable prices.', badge: 'Authentic' },
+  snacks: { emoji: '🥜', color: '#1B4D1A', accentColor: '#1B8B3B', headline: 'Premium Snacks', sub: 'Exotic nuts, gourmet cookies and crackers.', badge: 'Best Value' },
+  beauty: { emoji: '💄', color: '#4A0E3A', accentColor: '#C8102E', headline: 'Glow Up', sub: 'Skincare and beauty essentials for radiant skin.', badge: 'New In' },
+  beverages: { emoji: '🍹', color: '#0D3B4A', accentColor: '#1B8B3B', headline: 'Sip & Savour', sub: 'Specialty drinks and beverages for every mood.', badge: 'Fresh' },
+}
+
+export type ShowcaseGroup = { category: Category; products: Product[] }
+
+function ShowcaseCard({ product, accentColor }: { product: Product; accentColor: string }) {
   const addItem = useCartStore((s) => s.addItem)
-  const discount = Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
+  const discount = product.compare_price
+    ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
+    : 0
 
   const handleAdd = () => {
-    const p: Product = {
-      id: product.id, name: product.name, slug: product.id,
-      description: '', price: product.price, compare_price: product.compare_price,
-      images: [product.image], category_id: null, stock: 99,
-      is_featured: false, is_active: true, tags: [], created_at: '', updated_at: '',
-    }
-    addItem(p, 1)
+    addItem(product, 1)
     toast.success('Added to cart!')
   }
 
   return (
     <div className="group bg-white rounded-3xl overflow-hidden border border-gray-100 hover:border-gray-200 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col">
-      <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
+      <Link href={`/product/${product.id}`} className="relative aspect-[4/3] overflow-hidden bg-gray-50 block">
         <Image
-          src={product.image}
+          src={product.images?.[0] || `https://picsum.photos/seed/${product.id}/500/375`}
           alt={product.name}
           fill
           style={{ objectFit: 'cover' }}
@@ -143,22 +62,18 @@ function ShowcaseCard({ product, accentColor }: { product: ShowcaseProduct; acce
             -{discount}%
           </span>
         )}
-        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1 shadow-sm">
-          <Star size={10} className="fill-amber-400 text-amber-400" />
-          <span className="text-[10px] font-bold text-gray-800">{product.rating}.0</span>
-        </div>
-      </div>
+      </Link>
 
       <div className="p-4 flex flex-col flex-1">
-        <h4 className="font-bold text-gray-900 text-sm leading-snug mb-3 line-clamp-2 flex-1">
+        <Link href={`/product/${product.id}`} className="font-bold text-gray-900 text-sm leading-snug mb-3 line-clamp-2 flex-1 hover:text-green-700 transition-colors">
           {product.name}
-        </h4>
+        </Link>
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="font-black text-gray-900 text-base leading-none">
               Rs. {product.price.toLocaleString()}
             </p>
-            {product.compare_price > product.price && (
+            {product.compare_price && product.compare_price > product.price && (
               <p className="text-[11px] text-gray-400 line-through mt-0.5">
                 Rs. {product.compare_price.toLocaleString()}
               </p>
@@ -178,9 +93,28 @@ function ShowcaseCard({ product, accentColor }: { product: ShowcaseProduct; acce
   )
 }
 
-export default function CategoryShowcase() {
+export default function CategoryShowcase({ groups }: { groups: ShowcaseGroup[] }) {
   const [activeIdx, setActiveIdx] = useState(0)
-  const cat = showcaseData[activeIdx]
+
+  // Only categories that actually have products
+  const panels = groups
+    .filter((g) => g.products.length > 0)
+    .map((g) => ({
+      category: g.category,
+      products: g.products.slice(0, 4),
+      style: styleMap[g.category.slug] || defaultStyle,
+    }))
+
+  if (panels.length === 0) return null
+  const idx = Math.min(activeIdx, panels.length - 1)
+  const panel = panels[idx]
+  const cat = {
+    slug: panel.category.slug,
+    label: panel.category.name,
+    image: panel.category.image_url || `https://picsum.photos/seed/${panel.category.slug}/900/1200`,
+    products: panel.products,
+    ...panel.style,
+  }
 
   return (
     <section className="py-20 px-4 relative overflow-hidden" style={{ background: '#FAFBFA' }}>
@@ -208,19 +142,19 @@ export default function CategoryShowcase() {
         {/* Tabs */}
         <div className="flex justify-center mb-10 reveal reveal-d1">
           <div className="inline-flex flex-wrap justify-center gap-1.5 p-1.5 rounded-2xl bg-white shadow-sm border border-gray-100">
-            {showcaseData.map((c, i) => (
+            {panels.map((p, i) => (
               <button
-                key={c.slug}
+                key={p.category.slug}
                 onClick={() => setActiveIdx(i)}
                 className={`flex items-center gap-2 px-4 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all duration-300 ${
-                  activeIdx === i
+                  idx === i
                     ? 'text-white shadow-lg scale-105'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
-                style={activeIdx === i ? { background: c.accentColor } : {}}
+                style={idx === i ? { background: p.style.accentColor } : {}}
               >
-                <span className="text-base">{c.emoji}</span>
-                {c.label}
+                <span className="text-base">{p.style.emoji}</span>
+                {p.category.name}
               </button>
             ))}
           </div>

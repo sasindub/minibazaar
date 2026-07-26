@@ -1,10 +1,6 @@
 import type { Metadata } from 'next'
 import { Toaster } from 'react-hot-toast'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
-import CartDrawer from '@/components/CartDrawer'
-import ScrollObserver from '@/components/ScrollObserver'
-import NavbarSpacer from '@/components/NavbarSpacer'
+import SiteChrome from '@/components/SiteChrome'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -22,15 +18,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
       </head>
-      <body>
-        <ScrollObserver />
-        <Navbar />
-        <NavbarSpacer />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <Footer />
-        <CartDrawer />
+      <body suppressHydrationWarning>
+        <SiteChrome>{children}</SiteChrome>
         <Toaster
           position="top-right"
           toastOptions={{

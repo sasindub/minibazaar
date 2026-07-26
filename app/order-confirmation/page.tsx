@@ -95,7 +95,7 @@ function OrderConfirmationContent() {
             {/* Contact */}
             <div className="grid grid-cols-2 gap-3 mb-6">
               <a
-                href="https://wa.me/94XXXXXXXXX"
+                href="https://wa.me/94772525362"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 p-3 rounded-2xl border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors"

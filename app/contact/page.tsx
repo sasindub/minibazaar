@@ -9,7 +9,7 @@ const FacebookIcon = () => (
 )
 
 const contactInfo = [
-  { icon: Phone, title: 'Phone / WhatsApp', value: '+94 77 XXX XXXX', href: 'tel:+94XXXXXXXXX', color: '#1B8B3B' },
+  { icon: Phone, title: 'Phone / WhatsApp', value: '+94 77 252 5362', href: 'tel:+94772525362', color: '#1B8B3B' },
   { icon: Mail, title: 'Email', value: 'hello@minibazaar.lk', href: 'mailto:hello@minibazaar.lk', color: '#1B8B3B' },
   { icon: FacebookIcon, title: 'Facebook', value: 'facebook.com/minibazaar.lk', href: 'https://www.facebook.com/minibazaar.lk/', color: '#1877F2' },
   { icon: Clock, title: 'Business Hours', value: 'Mon–Sat: 9AM – 6PM', href: null, color: '#1B8B3B' },
@@ -80,7 +80,7 @@ export default function ContactPage() {
 
             {/* WhatsApp CTA */}
             <a
-              href="https://wa.me/94XXXXXXXXX?text=Hello%20MiniBazaar!%20I%20have%20a%20question%20about..."
+              href="https://wa.me/94772525362?text=Hello%20MiniBazaar!%20I%20have%20a%20question%20about..."
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl text-white font-bold transition-all hover:opacity-90 hover:scale-[1.02] shadow-lg mt-2"
