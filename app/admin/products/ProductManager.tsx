@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import Image from 'next/image'
 import { Plus, Pencil, Trash2, Star, X, Upload, Loader2 } from 'lucide-react'
 import type { Product, Category } from '@/lib/types'
-import { saveProduct, deleteProduct, uploadProductImage, deleteProductImage, type ProductInput } from './actions'
+import { saveProduct, deleteProduct, uploadProductImage, deleteProductImage, setHotDealsEnabled, type ProductInput } from './actions'
 
 const MAX_UPLOAD_MB = 3
 
@@ -40,12 +40,14 @@ async function compressImage(file: File): Promise<File> {
 
 const empty = (): ProductInput => ({
   name: '', description: '', price: 0, compare_price: null,
-  category_id: null, stock: 0, is_featured: false, is_active: true,
+  category_id: null, stock: 0, is_featured: false, is_hot_deal: false, is_active: true,
   images: [], tags: [],
 })
 
-export default function ProductManager({ initialProducts, categories }: { initialProducts: Product[]; categories: Category[] }) {
+export default function ProductManager({ initialProducts, categories, hotDealsEnabled }: { initialProducts: Product[]; categories: Category[]; hotDealsEnabled: boolean }) {
   const [products, setProducts] = useState<Product[]>(initialProducts)
+  const [hotDealsOn, setHotDealsOn] = useState(hotDealsEnabled)
+  const [togglingHot, setTogglingHot] = useState(false)
   const [editing, setEditing] = useState<ProductInput | null>(null)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -58,7 +60,7 @@ export default function ProductManager({ initialProducts, categories }: { initia
     setEditing({
       id: p.id, name: p.name, description: p.description || '', price: p.price,
       compare_price: p.compare_price, category_id: p.category_id, stock: p.stock,
-      is_featured: p.is_featured, is_active: p.is_active, images: p.images || [], tags: p.tags || [],
+      is_featured: p.is_featured, is_hot_deal: p.is_hot_deal, is_active: p.is_active, images: p.images || [], tags: p.tags || [],
     })
   }
 
@@ -105,8 +107,34 @@ export default function ProductManager({ initialProducts, categories }: { initia
 
   const catName = (id: string | null) => categories.find((c) => c.id === id)?.name || '—'
 
+  const toggleHotDeals = async () => {
+    const next = !hotDealsOn
+    setHotDealsOn(next); setTogglingHot(true)
+    const res = await setHotDealsEnabled(next)
+    setTogglingHot(false)
+    if (res?.error) { setHotDealsOn(!next); alert('Failed: ' + res.error) }
+  }
+
   return (
     <div>
+      {/* Hot Deals section master switch */}
+      <div className="flex items-center justify-between bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 mb-6">
+        <div>
+          <p className="text-sm font-bold text-gray-900">🔥 Hot Deals section</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            When ON, products marked as Hot Deal show in the homepage Flash Deals area. When OFF, the whole section is hidden.
+          </p>
+        </div>
+        <button
+          onClick={toggleHotDeals}
+          disabled={togglingHot}
+          className={`relative w-14 h-7 rounded-full transition-colors flex-shrink-0 ${hotDealsOn ? 'bg-green-600' : 'bg-gray-300'} disabled:opacity-60`}
+          aria-label="Toggle hot deals section"
+        >
+          <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${hotDealsOn ? 'translate-x-7' : ''}`} />
+        </button>
+      </div>
+
       <div className="flex items-center justify-between mb-6">
         <p className="text-sm text-gray-500">{products.length} product(s)</p>
         <button onClick={openNew} className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-bold text-sm hover:opacity-90" style={{ background: '#1B8B3B' }}>
@@ -218,6 +246,10 @@ export default function ProductManager({ initialProducts, categories }: { initia
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" checked={editing.is_featured} onChange={(e) => setEditing({ ...editing, is_featured: e.target.checked })} className="w-4 h-4 accent-green-600" />
                   <span className="text-sm font-semibold text-gray-700">Featured</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={editing.is_hot_deal} onChange={(e) => setEditing({ ...editing, is_hot_deal: e.target.checked })} className="w-4 h-4 accent-red-600" />
+                  <span className="text-sm font-semibold text-gray-700">🔥 Hot Deal</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" checked={editing.is_active} onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })} className="w-4 h-4 accent-green-600" />

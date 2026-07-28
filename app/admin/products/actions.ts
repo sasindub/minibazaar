@@ -58,6 +58,7 @@ export interface ProductInput {
   category_id: string | null
   stock: number
   is_featured: boolean
+  is_hot_deal: boolean
   is_active: boolean
   images: string[]
   tags: string[]
@@ -77,6 +78,7 @@ export async function saveProduct(input: ProductInput): Promise<{ error?: string
     category_id: input.category_id,
     stock: input.stock,
     is_featured: input.is_featured,
+    is_hot_deal: input.is_hot_deal,
     is_active: input.is_active,
     images: input.images,
     tags: input.tags,
@@ -97,6 +99,18 @@ export async function saveProduct(input: ProductInput): Promise<{ error?: string
 
   revalidatePath('/admin/products')
   revalidatePath('/shop')
+  revalidatePath('/')
+  return {}
+}
+
+export async function setHotDealsEnabled(enabled: boolean): Promise<{ error?: string }> {
+  await requireAdmin()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabaseAdmin.from('site_settings') as any).upsert(
+    { key: 'hot_deals_enabled', value: enabled ? 'true' : 'false', updated_at: new Date().toISOString() },
+    { onConflict: 'key' },
+  )
+  if (error) return { error: error.message }
   revalidatePath('/')
   return {}
 }

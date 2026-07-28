@@ -9,10 +9,12 @@ export const dynamic = 'force-dynamic'
 export default async function AdminProductsPage() {
   await requireAdmin()
 
-  const [{ data: products }, { data: categories }] = await Promise.all([
+  const [{ data: products }, { data: categories }, { data: setting }] = await Promise.all([
     supabaseAdmin.from('products').select('*, category:categories(*)').order('created_at', { ascending: false }),
     supabaseAdmin.from('categories').select('*').order('name'),
+    supabaseAdmin.from('site_settings').select('value').eq('key', 'hot_deals_enabled').single(),
   ])
+  const hotDealsEnabled = (setting as { value?: string } | null)?.value !== 'false'
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -26,6 +28,7 @@ export default async function AdminProductsPage() {
         <ProductManager
           initialProducts={(products || []) as Product[]}
           categories={(categories || []) as Category[]}
+          hotDealsEnabled={hotDealsEnabled}
         />
       </div>
     </div>

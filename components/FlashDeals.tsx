@@ -1,7 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { Zap } from 'lucide-react'
+import Link from 'next/link'
+import { Zap, ShoppingCart } from 'lucide-react'
+import { useCartStore } from '@/store/cartStore'
+import toast from 'react-hot-toast'
+import type { Product } from '@/lib/types'
 
 const deals = [
   { id: 1, src: '/images/i1.jpg' },
@@ -48,7 +52,10 @@ function Countdown() {
   )
 }
 
-export default function FlashDeals() {
+export default function FlashDeals({ products }: { products?: Product[] }) {
+  const addItem = useCartStore((s) => s.addItem)
+  const hotProducts = products ?? []
+
   return (
     <section
       className="py-14 px-4 relative overflow-hidden"
@@ -90,36 +97,80 @@ export default function FlashDeals() {
           className="flex gap-4 overflow-x-auto pb-2 reveal reveal-d1"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {deals.map((deal, i) => (
-            <div
-              key={deal.id}
-              className="relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group border border-white/10"
-              style={{
-                width: '200px',
-                height: '260px',
-                transitionDelay: `${i * 0.06}s`,
-              }}
-            >
-              <Image
-                src={deal.src}
-                alt={`Flash deal ${deal.id}`}
-                fill
-                style={{ objectFit: 'cover', objectPosition: 'top' }}
-                className="transition-transform duration-500 group-hover:scale-107"
-              />
-              {/* Bottom gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              {/* Flash badge */}
+          {hotProducts.length > 0 ? (
+            hotProducts.map((p, i) => {
+              const discount = p.compare_price
+                ? Math.round(((p.compare_price - p.price) / p.compare_price) * 100)
+                : 0
+              return (
+                <div
+                  key={p.id}
+                  className="relative shrink-0 rounded-2xl overflow-hidden group border border-white/10 bg-white flex flex-col"
+                  style={{ width: '200px', transitionDelay: `${i * 0.06}s` }}
+                >
+                  <Link href={`/product/${p.id}`} className="relative block" style={{ height: '190px' }}>
+                    <Image
+                      src={p.images?.[0] || `https://picsum.photos/seed/${p.id}/400/380`}
+                      alt={p.name}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      className="transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-lg text-white text-xs font-bold shadow-lg" style={{ background: '#C8102E' }}>
+                      <Zap size={10} className="fill-white" /> {discount > 0 ? `-${discount}%` : 'HOT'}
+                    </div>
+                  </Link>
+                  <div className="p-3 flex flex-col flex-1">
+                    <Link href={`/product/${p.id}`} className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 mb-2 flex-1 hover:text-green-700">{p.name}</Link>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="font-black text-gray-900 text-sm">Rs. {p.price.toLocaleString()}</span>
+                        {p.compare_price && p.compare_price > p.price && (
+                          <span className="block text-[11px] text-gray-400 line-through">Rs. {p.compare_price.toLocaleString()}</span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => { addItem(p, 1); toast.success('Added to cart!') }}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 hover:scale-110 transition-all"
+                        style={{ background: '#C8102E' }}
+                        aria-label="Add to cart"
+                      >
+                        <ShoppingCart size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
+            })
+          ) : (
+            deals.map((deal, i) => (
               <div
-                className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-lg text-white text-xs font-bold shadow-lg"
-                style={{ background: '#C8102E' }}
+                key={deal.id}
+                className="relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group border border-white/10"
+                style={{
+                  width: '200px',
+                  height: '260px',
+                  transitionDelay: `${i * 0.06}s`,
+                }}
               >
-                <Zap size={10} className="fill-white" /> FLASH
+                <Image
+                  src={deal.src}
+                  alt={`Flash deal ${deal.id}`}
+                  fill
+                  style={{ objectFit: 'cover', objectPosition: 'top' }}
+                  className="transition-transform duration-500 group-hover:scale-107"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div
+                  className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-lg text-white text-xs font-bold shadow-lg"
+                  style={{ background: '#C8102E' }}
+                >
+                  <Zap size={10} className="fill-white" /> FLASH
+                </div>
+                <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-red-500/60 transition-all duration-300" />
               </div>
-              {/* Hover glow border */}
-              <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-red-500/60 transition-all duration-300" />
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </section>

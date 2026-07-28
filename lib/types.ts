@@ -9,6 +9,7 @@ export interface Product {
   category_id: string | null
   stock: number
   is_featured: boolean
+  is_hot_deal: boolean
   is_active: boolean
   tags: string[]
   created_at: string

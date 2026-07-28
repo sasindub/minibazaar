@@ -8,6 +8,21 @@ ALTER TABLE orders
   ADD CONSTRAINT orders_payment_status_check
   CHECK (payment_status IN ('pending', 'paid', 'failed', 'refunded'));
 
+-- 1b. Hot Deals flag (shown in the homepage Flash Deals area)
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_hot_deal BOOLEAN DEFAULT false;
+
+-- 1c. Site settings (e.g. Hot Deals section on/off). Public read, server-only write.
+CREATE TABLE IF NOT EXISTS site_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public can read settings" ON site_settings;
+CREATE POLICY "Public can read settings" ON site_settings FOR SELECT USING (true);
+INSERT INTO site_settings (key, value) VALUES ('hot_deals_enabled', 'true')
+  ON CONFLICT (key) DO NOTHING;
+
 -- 2. Lock down writes: the public (anon key) must NOT be able to write products
 --    or update orders. All admin writes go through the server using the
 --    service_role key, which bypasses RLS entirely.

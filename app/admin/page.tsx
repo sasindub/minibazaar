@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Package, ShoppingBag, TrendingUp, Settings, BarChart3, Clock, CheckCircle2, XCircle, Truck, LogOut, Eye, X, MapPin, Phone, Mail } from 'lucide-react'
+import { Package, ShoppingBag, TrendingUp, Settings, BarChart3, Clock, CheckCircle2, XCircle, Truck, LogOut, Eye, X, MapPin, Phone, Mail, Search } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { logout, updateOrderStatus, updatePaymentStatus } from './actions'
 
@@ -35,6 +35,9 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({ total: 0, today: 0, revenue: 0, products: 0 })
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<any | null>(null)
+  const [search, setSearch] = useState('')
+  const [orderFilter, setOrderFilter] = useState('')
+  const [paymentFilter, setPaymentFilter] = useState('')
 
   useEffect(() => {
     loadData()
@@ -42,7 +45,7 @@ export default function AdminDashboard() {
 
   const loadData = async () => {
     try {
-      const { data: orderData } = await supabase.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }).limit(20)
+      const { data: orderData } = await supabase.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }).limit(200)
       const { count: productCount } = await supabase.from('products').select('*', { count: 'exact', head: true })
       // Revenue = sum of DELIVERED orders only, across all orders (not just recent 20)
       const { data: deliveredData } = await supabase.from('orders').select('total').eq('order_status', 'delivered')
@@ -71,6 +74,17 @@ export default function AdminDashboard() {
     const res = await updatePaymentStatus(orderId, status)
     if (res?.error) { setOrders(prev); alert('Failed: ' + res.error) }
   }
+
+  const filteredOrders = orders.filter((o) => {
+    const q = search.trim().toLowerCase()
+    const matchSearch = !q ||
+      o.customer_name?.toLowerCase().includes(q) ||
+      o.order_number?.toLowerCase().includes(q) ||
+      o.customer_phone?.toLowerCase().includes(q)
+    const matchOrder = !orderFilter || o.order_status === orderFilter
+    const matchPayment = !paymentFilter || (o.payment_status || 'pending') === paymentFilter
+    return matchSearch && matchOrder && matchPayment
+  })
 
   const statCards = [
     { icon: ShoppingBag, label: 'Total Orders', value: stats.total, color: '#1B8B3B', bg: '#E8F5ED' },
@@ -123,11 +137,40 @@ export default function AdminDashboard() {
 
         {/* Orders table */}
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-900">Recent Orders</h2>
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap">
+            <h2 className="text-lg font-bold text-gray-900">Orders {!loading && <span className="text-sm font-medium text-gray-400">({filteredOrders.length})</span>}</h2>
             <button onClick={loadData} className="text-sm font-semibold px-4 py-2 rounded-xl transition-all hover:opacity-90 text-white" style={{ background: '#1B8B3B' }}>
               Refresh
             </button>
+          </div>
+
+          {/* Search + filters */}
+          <div className="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[220px]">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by name, order #, or phone…"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-green-500 focus:outline-none"
+              />
+            </div>
+            <select value={orderFilter} onChange={(e) => setOrderFilter(e.target.value)} className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 focus:border-green-500 focus:outline-none cursor-pointer">
+              <option value="">All order statuses</option>
+              {['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'].map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <select value={paymentFilter} onChange={(e) => setPaymentFilter(e.target.value)} className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 focus:border-green-500 focus:outline-none cursor-pointer">
+              <option value="">All payment statuses</option>
+              <option value="pending">Payment pending</option>
+              <option value="paid">Payment complete</option>
+              <option value="refunded">Payment return</option>
+              <option value="failed">Payment failed</option>
+            </select>
+            {(search || orderFilter || paymentFilter) && (
+              <button onClick={() => { setSearch(''); setOrderFilter(''); setPaymentFilter('') }} className="flex items-center gap-1 text-sm font-semibold text-gray-500 hover:text-gray-700 px-2 py-2">
+                <X size={14} /> Clear
+              </button>
+            )}
           </div>
 
           {loading ? (
@@ -138,6 +181,11 @@ export default function AdminDashboard() {
             <div className="text-center py-16">
               <ShoppingBag size={48} className="mx-auto text-gray-200 mb-4" />
               <p className="text-gray-500">No orders yet. Orders will appear here once customers start purchasing.</p>
+            </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="text-center py-16">
+              <Search size={40} className="mx-auto text-gray-200 mb-4" />
+              <p className="text-gray-500">No orders match your search or filters.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -150,7 +198,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map((order) => {
+                  {filteredOrders.map((order) => {
                     const StatusIcon = statusIcons[order.order_status] || Clock
                     return (
                       <tr key={order.id} className="border-t border-gray-50 hover:bg-gray-50 transition-colors">

@@ -4,6 +4,7 @@ import type { Product, Category } from './types'
 export async function getProducts(options?: {
   category?: string
   featured?: boolean
+  hotDeal?: boolean
   search?: string
   limit?: number
   offset?: number
@@ -25,6 +26,8 @@ export async function getProducts(options?: {
   }
 
   if (options?.featured) query = query.eq('is_featured', true)
+
+  if (options?.hotDeal) query = query.eq('is_hot_deal', true)
 
   if (options?.search) {
     query = query.ilike('name', `%${options.search}%`)
