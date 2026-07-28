@@ -23,6 +23,11 @@ CREATE POLICY "Public can read settings" ON site_settings FOR SELECT USING (true
 INSERT INTO site_settings (key, value) VALUES ('hot_deals_enabled', 'true')
   ON CONFLICT (key) DO NOTHING;
 
+-- 1d. Allow PayHere as a payment method
+ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_payment_method_check;
+ALTER TABLE orders ADD CONSTRAINT orders_payment_method_check
+  CHECK (payment_method IN ('bank_transfer', 'cash_on_delivery', 'payhere'));
+
 -- 2. Lock down writes: the public (anon key) must NOT be able to write products
 --    or update orders. All admin writes go through the server using the
 --    service_role key, which bypasses RLS entirely.

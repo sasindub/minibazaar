@@ -3,12 +3,22 @@ import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle2, Package, Truck, Phone, Mail, ShoppingBag, ArrowRight, Copy } from 'lucide-react'
+import { getOrder } from '@/lib/products'
 
 function OrderConfirmationContent() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('id') || ''
-  const [orderNumber] = useState(`MB-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(Math.random() * 9000) + 1000}`)
+  const [orderNumber, setOrderNumber] = useState('')
   const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (!orderId) return
+    let active = true
+    getOrder(orderId)
+      .then((o) => { if (active && o) setOrderNumber((o as { order_number?: string }).order_number || '') })
+      .catch(() => {})
+    return () => { active = false }
+  }, [orderId])
 
   const copyOrderNumber = () => {
     navigator.clipboard.writeText(orderNumber)
@@ -48,7 +58,7 @@ function OrderConfirmationContent() {
             <div className="flex items-center justify-between p-4 rounded-2xl mb-6" style={{ background: '#E8F5ED' }}>
               <div>
                 <p className="text-xs text-gray-500 font-medium mb-0.5">Order Number</p>
-                <p className="text-lg font-black" style={{ color: '#1B8B3B' }}>{orderNumber}</p>
+                <p className="text-lg font-black" style={{ color: '#1B8B3B' }}>{orderNumber || 'Loading…'}</p>
               </div>
               <button
                 onClick={copyOrderNumber}

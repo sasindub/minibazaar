@@ -75,7 +75,7 @@ export async function createOrder(orderData: {
   customer_email: string
   customer_phone: string
   shipping_address: Record<string, string>
-  payment_method: 'bank_transfer' | 'cash_on_delivery'
+  payment_method: 'bank_transfer' | 'cash_on_delivery' | 'payhere'
   subtotal: number
   shipping_fee: number
   total: number

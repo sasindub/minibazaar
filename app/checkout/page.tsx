@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { CreditCard, Truck, CheckCircle2, ChevronRight, Building2, Lock, AlertCircle } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 import { createOrder } from '@/lib/products'
+import { createPayHereCheckout } from './payhere'
 import toast from 'react-hot-toast'
 
 const SHIPPING_THRESHOLD = 5000
@@ -24,7 +25,7 @@ export default function CheckoutPage() {
   const [form, setForm] = useState({
     name: '', email: '', phone: '',
     address: '', city: '', province: '', postal_code: '',
-    payment_method: 'cash_on_delivery' as 'cash_on_delivery' | 'bank_transfer',
+    payment_method: 'cash_on_delivery' as 'cash_on_delivery' | 'bank_transfer' | 'payhere',
     notes: '',
   })
   const [errors, setErrors] = useState<Partial<typeof form>>({})
@@ -79,12 +80,50 @@ export default function CheckoutPage() {
           quantity: i.quantity,
         })),
       })
+
+      const orderId = (order as any).id
+      const orderNumber = (order as any).order_number || orderId
+
+      // Online payment: redirect to PayHere's hosted checkout
+      if (form.payment_method === 'payhere') {
+        const [firstName, ...rest] = form.name.trim().split(' ')
+        const res = await createPayHereCheckout({
+          orderId,
+          orderNumber,
+          amount: grandTotal,
+          firstName: firstName || form.name,
+          lastName: rest.join(' '),
+          email: form.email,
+          phone: form.phone,
+          address: form.address,
+          city: form.city,
+        })
+        if (!res.ok) {
+          toast.error(res.error || 'Payment setup failed')
+          setLoading(false)
+          return
+        }
+        clearCart()
+        // Build and auto-submit a form to PayHere
+        const f = document.createElement('form')
+        f.method = 'POST'
+        f.action = res.actionUrl
+        Object.entries(res.fields).forEach(([k, v]) => {
+          const input = document.createElement('input')
+          input.type = 'hidden'
+          input.name = k
+          input.value = v
+          f.appendChild(input)
+        })
+        document.body.appendChild(f)
+        f.submit()
+        return
+      }
+
       clearCart()
-      router.push(`/order-confirmation?id=${(order as any).id}`)
+      router.push(`/order-confirmation?id=${orderId}`)
     } catch (err) {
-      // Fallback: simulate success for demo
-      clearCart()
-      router.push(`/order-confirmation?id=DEMO-${Date.now()}`)
+      toast.error('Could not place your order. Please try again.')
     }
     setLoading(false)
   }
@@ -265,6 +304,31 @@ export default function CheckoutPage() {
                       )}
                     </div>
                   </label>
+
+                  {/* PayHere — online card payment */}
+                  <label className={`flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all ${form.payment_method === 'payhere' ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="payhere"
+                      checked={form.payment_method === 'payhere'}
+                      onChange={() => setForm((f) => ({ ...f, payment_method: 'payhere' }))}
+                      className="mt-1"
+                      style={{ accentColor: '#1B8B3B' }}
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <CreditCard size={20} style={{ color: '#1B8B3B' }} />
+                        <p className="font-bold text-gray-900">Pay Online (Card)</p>
+                        <span className="text-xs px-2 py-0.5 rounded-full font-semibold text-white" style={{ background: '#1B8B3B' }}>Secure</span>
+                      </div>
+                      <p className="text-sm text-gray-500">Pay securely by Visa / Mastercard / online banking via PayHere. You&apos;ll be redirected to complete payment.</p>
+                      <ul className="text-xs text-gray-400 mt-2 space-y-1">
+                        <li>✓ Instant confirmation</li>
+                        <li>✓ Secured by PayHere</li>
+                      </ul>
+                    </div>
+                  </label>
                 </div>
 
                 <div className="flex gap-3 mt-6">
@@ -311,7 +375,7 @@ export default function CheckoutPage() {
                     <button onClick={() => setStep('payment')} className="text-xs font-semibold" style={{ color: '#1B8B3B' }}>Edit</button>
                   </div>
                   <p className="text-sm text-gray-700 font-medium">
-                    {form.payment_method === 'cash_on_delivery' ? '💵 Cash on Delivery' : '🏦 Bank Transfer'}
+                    {form.payment_method === 'cash_on_delivery' ? '💵 Cash on Delivery' : form.payment_method === 'payhere' ? '💳 Pay Online (Card via PayHere)' : '🏦 Bank Transfer'}
                   </p>
                 </div>
 
@@ -354,7 +418,7 @@ export default function CheckoutPage() {
                       </>
                     ) : (
                       <>
-                        <Lock size={16} /> Place Order
+                        <Lock size={16} /> {form.payment_method === 'payhere' ? 'Pay Now' : 'Place Order'}
                       </>
                     )}
                   </button>
