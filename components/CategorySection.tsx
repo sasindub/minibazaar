@@ -11,12 +11,10 @@ const fallbackCategories = [
   { id: '5', name: 'Beverages', slug: 'beverages', description: 'Specialty drinks', image_url: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80', created_at: '' },
 ]
 
-const categoryEmojis: Record<string, string> = {
-  chocolates: '🍫',
-  perfumes: '🌸',
-  snacks: '🥜',
-  beauty: '💄',
-  beverages: '🍹',
+// Local image overrides for specific category cards
+const categoryImages: Record<string, string> = {
+  perfumes: '/images/perfume.png',
+  snacks: '/images/nuts.png',
 }
 
 export default function CategorySection({ categories }: { categories: Category[] }) {
@@ -46,7 +44,7 @@ export default function CategorySection({ categories }: { categories: Category[]
             >
               {/* Image */}
               <Image
-                src={cat.image_url || `https://picsum.photos/seed/${cat.slug}/400/400`}
+                src={categoryImages[cat.slug] || cat.image_url || `https://picsum.photos/seed/${cat.slug}/400/400`}
                 alt={cat.name}
                 fill
                 style={{ objectFit: 'cover' }}
@@ -61,9 +59,6 @@ export default function CategorySection({ categories }: { categories: Category[]
 
               {/* Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center">
-                <span className="text-3xl mb-2 group-hover:scale-125 transition-transform duration-300 block">
-                  {categoryEmojis[cat.slug] || '🛒'}
-                </span>
                 <h3 className="text-white font-bold text-sm md:text-base leading-tight group-hover:text-green-200 transition-colors">
                   {cat.name}
                 </h3>
